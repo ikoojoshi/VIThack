@@ -1,15 +1,105 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
-    </head>
-    <body>
-        <ol> 
-            {%for i in preview%} 
-              
-                <li>{{i}}</li> 
-            {%endfor%} 
-              
-            </ol> 
-    </body>
+<head>
+	<title>HPE OneView</title>
+	<meta charset="utf-8">
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Livvic:500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Varela&display=swap" rel="stylesheet">
+
+
+<body>
+	<div class="left">
+		
+	<div class="contcont">
+	<div class="logopartback"></div>
+	<div class="logopart">
+	</div>
+	<img class="hplogo" src="{{ url_for('static', filename='logo.png') }}">
+</div>
+<p class="heading">OneView Assistant</p>
+<br>
+<div class="convo">
+			<div class="convomsgs">
+				<div class="rmsg">
+					<p class="rmsgtxt">Hi, how are you?</p>
+					<p class="us1">Assistant<span class="time">{{time}}</span></p>
+				</div>
+			</div>
+
+			<div class="convoinput">
+				<form id="form">
+					<input class="entertxt" id="messageVal" type="text"><i class="sendbut material-icons" onclick="send()">send</i>
+				</form>
+			</div>
+		</div>
+	</div>
+<div class="right">
+	<p class="rechead">
+		Recommended Questions
+	</p>
+	{%for i in range(0,length)%}
+		<p class="rec" onclick='anim(i)'>
+			preview[i]
+		</p> 
+    	<li>{{i}}</li> 
+    {%endfor%}
+</div>
+
+
+<script>
+	function anim(name) {
+		if (document.getElementsByClassName('rec')[name].classList.contains('recanim')){
+			document.getElementsByClassName('rec')[name].classList.remove("recanim");
+			// document.getElementsByClassName('rec')[name].classList.add("recanim");
+			console.log(document.getElementsByClassName('rec')[name].classList);
+		}
+
+	  document.getElementsByClassName('rec')[name].classList.add("recanim");
+
+	} 
+	document.getElementById("form").addEventListener("submit",(e)=> {
+		e.preventDefault();
+		send();
+	});
+	document.getElementsByClassName("sendbut")[0].addEventListener("click", (e) =>{
+		e.preventDefault();
+		let value = document.getElementById('messageVal').value;
+		document.getElementsByClassName('convomsgs')[0].innerHTML += `
+		<div class="smsg">
+					<p class="smsgtxt">${value}</p>
+					<p class="us1">You<span class="time">${new Date().getHours()}:${new Date().getMinutes()}</span></p>
+				</div>
+		`
+		document.getElementById('form').reset();
+		let xhr = new XMLHttpRequest();
+		xhr.open('POST','/getResponse');
+		xhr.setRequestHeader('Content-Type','application/json');
+		xhr.onreadystatechange = () => {
+			let resp = xhr.responseText;
+			try {
+				let data = JSON.parse(resp);
+				if (data.success) {
+					document.getElementsByClassName('convomsgs')[0].innerHTML += `
+						<div class="rmsg">
+									<p class="rmsgtxt">${data.answer}</p>
+									<p class="us1">Assistant<span class="time">${new Date().getHours()}:${new Date().getMinutes()}</span></p>
+								</div>
+						`								
+				} else {
+					console.log(resp);
+				}
+			} catch(err) {
+				console.log(resp);
+			}
+		}
+		xhr.send(JSON.stringify({data:value}))
+	});
+</script>
+
+
+</body>
 </html>

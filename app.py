@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, make_response, render_template;
 from flask_pymongo import PyMongo
 from HPchatbot import readContents, words, find
+from datetime import datetime
 
 app = Flask(__name__);
 app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase";
@@ -16,8 +17,8 @@ def home():
     if (cookie != None):
         user = mongo.db.users.find_one({"user": cookie});
         if (user == None):
-            user = mongo.db.user.insert_many([{"user":request.remote_addr, "queries":[]}]);
-            user = user.inserted_ids;
+            user = mongo.db.user.insert_one({"user":request.remote_addr, "queries":[]});
+            user = user.inserted_id;
             first = True;
             if (len(user)>0):
                 done = True;
@@ -40,7 +41,9 @@ def home():
         else:
             done = False;
         preview=[];
-    resp = make_response(render_template("index.html", preview=preview))
+    now = datetime.now()
+    current_time = now.strftime("%H:%M")
+    resp = make_response(render_template("index.html", preview=preview, length=len(preview), time = current_time))
     if (first):
         resp.set_cookie('HPE',str(user[0]));    
     return resp 
@@ -50,12 +53,12 @@ def findQuery():
     cookie = request.cookies.get('somecookiename')
     data = request.get_json();
     if (cookie != None):
-        user = mongo.db.user.update_one({"user":cookie,"$push":{"queries":"SPP stands for"}});
-        answer = find("SPP stands for",stop_words,doc_text,answers,ps)
+        user = mongo.db.user.update_one({"user":cookie,"$push":{"queries":data["data"]}});
+        answer = find(data["data"],stop_words,doc_text,answers,ps)
         # Generate answer
         done = True;
     else:
-        answer = find("SPP stands for",stop_words,doc_text,answers,ps)
+        answer = find(data["data"],stop_words,doc_text,answers,ps)
         done = True;
     return jsonify(
         status=200,
