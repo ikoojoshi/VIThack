@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
+    </head>
+    <body>
+        <ol> 
+            {%for i in preview%} 
+              
+                <li>{{i}}</li> 
+            {%endfor%} 
+              
+            </ol> 
+    </body>
+</html>
