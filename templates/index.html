@@ -70,6 +70,17 @@
 		let value = document.getElementById('messageVal').value;
 		sendData(value);
 	});
+	function dislike(question) {
+		let xhr = new XMLHttpRequest();
+		xhr.open('POST','/satisfied');
+		xhr.setRequestHeader('Content-Type','application/json');
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState == 4) {
+
+			}
+		}
+		xhr.send(JSON.stringify({data:question}))
+	}
 	function sendData(value) {
 		document.getElementsByClassName('convomsgs')[0].innerHTML += `
 		<div class="smsg">
