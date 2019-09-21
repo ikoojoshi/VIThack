@@ -24,14 +24,9 @@ def home():
                 done = True;
             else:
                 done = False;
+            queries=[]
         else:
             queries = user['queries'];
-        if(len(queries)>0):
-            #Do something
-            #preview = something
-            preview = [];
-        else:
-            preview=[];
     else:
         user = mongo.db.user.insert_many([{"user":request.remote_addr, "queries":[]}]);
         user = user.inserted_ids;
@@ -43,7 +38,7 @@ def home():
         preview=[];
     now = datetime.now()
     current_time = now.strftime("%H:%M")
-    resp = make_response(render_template("index.html", preview=preview, length=len(preview), time = current_time))
+    resp = make_response(render_template("index.html", preview=queries, length=len(queries), time = current_time))
     if (first):
         resp.set_cookie('HPE',str(user[0]));    
     return resp 
@@ -54,14 +49,14 @@ def findQuery():
     data = request.get_json();
     if (cookie != None):
         user = mongo.db.user.update_one({"user":cookie,"$push":{"queries":data["data"]}});
-        answer = find(data["data"],stop_words,doc_text,answers,ps)
-        # Generate answer
+        answer,top = find(data["data"],stop_words,doc_text,answers,questions,ps)
         done = True;
     else:
-        answer = find(data["data"],stop_words,doc_text,answers,ps)
+        answer,top = find(data["data"],stop_words,doc_text,answers,questions,ps)
         done = True;
     return jsonify(
         status=200,
         success=done,
-        answer=answer
+        answer=answer,
+        preview=top
     )
