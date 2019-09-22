@@ -1,0 +1,13 @@
+flask
+flask_pymongo
+pymongo
+bson
+pandas
+numpy
+pypdf2
+autocorrect
+nltk
+collections
+pprint
+bs4
+sklearn
