@@ -7,11 +7,11 @@ import json
 from recommendation import generate_recommendations
 from pandas import read_csv,DataFrame;
 
-app = Flask(__name__);
+app = Flask(__name__)
 @app.route("/",methods=["GET"])
 def home():
     resp = make_response(render_template("index.html"))
     return resp
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=3000)
