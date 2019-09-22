@@ -1,0 +1,29 @@
+questionID,Name
+1,What is HPE Composable Ecosystem Program? 
+2,What VMware plug-ins are in the HPE OneView Advanced 5.0 release? 
+3,How are the partner integrations licensed for VMware and Microsoft? 
+4,How is HPE OneView delivered? 
+5,"Does HPE OneView replace the need for HPE Systems Insight Manager, HPE Insight Control, and HPE Virtual Connect Enterprise Manager? "
+6,"How long will Hewlett Packard Enterprise support the current HPE SIM, product? "
+7,Are license upgrades available from Insight Management software to HPE OneView Advanced? 
+8,What support and services are available for HPE OneView? 
+9,How do I get training on HPE OneView? 
+10,Can a user access inventory and health status information consolidated by HPE OneView Global Dashboard using an API? 
+11,How does HPE OneView Global Dashboard help customers manage at scale? 
+12,What systems does HPE Global Dashboard support? 
+13,How is HPE OneView Global Dashboard delivered?
+14,Can I schedule an HPE OneView Global Dashboard report? 
+15,How can I track the assignment of HPE OneView licensed across my data centers? 
+16,Does HPE OneView Global Dashboard support IPv6? 
+17,Does HPE OneView Global Dashboard support interconnect modules? 
+18,Does HPE OneView Global Dashboard display remote support status? 
+19,Does Remote Technician require Remote Support? 
+20,Is there a charge for Remote Technician? 
+21,Is a support case required for Remote Technician? 
+22,Do I need to add firewall rules? 
+23,Can I time-box access? Does it time out? 
+24,Will the access be tracked and audited—what somebody did to what resource at what time? 
+25,Will keystrokes be captured? 
+26,What is the benefit of this versus using HPE MyRoom for screen sharing? 
+27,Does Remote Technician make it easier to provide support dumps and logs? 
+28,Is this technology unique to HPE OneView—how mature is it? How many people are using it? 
