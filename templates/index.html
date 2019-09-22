@@ -9,177 +9,95 @@
       rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Livvic:500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Varela&display=swap" rel="stylesheet">
-
-
-<body>
-	<div class="left">
-		
-	<div class="contcont">
-	<div class="logopartback"></div>
-	<div class="logopart">
+	<body>
+		<div class="left">
+			
+		<div class="contcont">
+		<div class="logopartback"></div>
+		<div class="logopart">
+		</div>
+		<img class="hplogo" src="{{ url_for('static', filename='logo.png') }}">
 	</div>
-	<img class="hplogo" src="{{ url_for('static', filename='logo.png') }}">
-</div>
-<p class="heading">OneView Assistant</p>
-<br>
-<div class="convo">
-			<div class="convomsgs">
-				<div class="rmsg">
-					<p class="rmsgtxt">Hi, how may I be of assisstance?</p>
-					<p class="us1">Assistant<span class="time">{{time}}</span></p>
+	<p class="heading">OneView Assistant</p>
+	<br>
+	<div class="convo">
+				<div class="convomsgs">
+					<div class="rmsg">
+						<p class="rmsgtxt">Hi how are you?</p>
+						<p class="us1">Assistant<span class="time">22:05</span><span class="vote"><i class="material-icons">thumb_down</i></span></p>
+					</div>
+					<div class="smsg">
+						<p class="smsgtxt">I am good, how are you?</p>
+						<p class="us2">You<span class="time">22:05</span></p>
+					</div>
+					<div class="rmsg">
+						<p class="rmsgtxt">Hi how are you? whatsup. i am in your city. lets meet for lunch?</p>
+						<p class="us1">Assistant<span class="time">22:05</span><span class="vote"><i class="material-icons">thumb_down</i></span></p>
+					</div>
+					<div class="rmsg">
+						<p class="rmsgtxt">I am good, how are you?</p>
+						<p class="us1">Assistant<span class="time">22:05</span><span class="vote"><i class="material-icons">thumb_down</i></span></p>
+					</div>
+					<div class="rmsg">
+						<p class="rmsgtxt">Hi how are you?</p>
+						<p class="us1">Assistant<span class="time">22:05</span><span class="vote"><i class="material-icons">thumb_down</i></span></p>
+					</div>
+					<div class="smsg">
+						<p class="smsgtxt">I am good, how are you?</p>
+						<p class="us2">You<span class="time">22:05</span></p>
+					</div>
+	
 				</div>
-			</div>
-			<div class="siemacont">
-					<button class="prev"><i class="material-icons">navigate_before</i></button>
-				<div class="siema">
-					{% for da in preview %}
-						<div><p class="recm" onclick='anim(this)'>
-							{{da}}
-						</p></div>
-						{%endfor%}
-				
+	
+	
+	
+	
+	
+	
+	
+	
+	
+				<div class="convoinput">
+					<form>
+						<input class="entertxt" type="text"><i class="sendbut material-icons">send</i>
+					</form>
 				</div>
-				<button class="next"><i class="material-icons">navigate_next</i></button>
-			</div>
-
-			<div class="convoinput">
-				<form id="form">
-					<input class="entertxt" id="messageVal" type="text"><i class="sendbut material-icons" onclick="send()">send</i>
-				</form>
 			</div>
 		</div>
-	</div>
-<div class="right">
-	<p class="rechead">
-		Recommended Questions
-	</p>
-	{%for da in preview%}
-		<p class="rec" onclick='anim(this)'>
-			{{da}}
+	<div class="right">
+		<p class="rechead">
+			Recommended Questions
 		</p>
-    {%endfor%}
-</div>
-
-<script src="{{ url_for('static', filename='siema.min.js') }}"></script>
-<script>
-	const mySiema = new Siema();
-	document.querySelector('.prev').addEventListener('click', () => mySiema.prev());
-	document.querySelector('.next').addEventListener('click', () => mySiema.next());
-</script>
-<script>
-	function anim(elem) {
-		console.log(elem);
-		if (elem.classList.contains('recanim')){
-			elem.classList.remove("recanim");
-			// document.getElementsByClassName('rec')[name].classList.add("recanim");
-			
-		}
-		elem.classList.add("recanim");
-		console.log(elem.innerHTML);
-		sendData(elem.innerHTML);
-
-	} 
-	document.getElementById("form").addEventListener("submit",(e)=> {
-		e.preventDefault();
-		send();
-	});
-	document.getElementsByClassName("sendbut")[0].addEventListener("click", (e) =>{
-		e.preventDefault();
-		let value = document.getElementById('messageVal').value;
-		sendData(value);
-	});
-	function dislike(question) {
-		let xhr = new XMLHttpRequest();
-		xhr.open('POST','/satisfied');
-		xhr.setRequestHeader('Content-Type','application/json');
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState == 4) {
-
+		<p class="rec" onclick='anim(0)'>
+			What do you mean by SSP?
+		</p>
+		<p class="rec" onclick='anim(1)'>
+			Can I create a template from an existing profile?
+		</p>
+		<p class="rec" onclick='anim(2)'>
+			Can I do a migration from the Virtual Connect Manager to an HPE OneView environment without the need to power off servers ?
+		</p>
+	</div>
+	<script src="siema.min.js"></script>
+	<script>
+		const mySiema = new Siema();
+		document.querySelector('.prev').addEventListener('click', () => mySiema.prev());
+		document.querySelector('.next').addEventListener('click', () => mySiema.next());
+	</script>
+	<script>
+		function anim(name) {
+			if (document.getElementsByClassName('rec')[name].classList.contains('recanim')){
+				document.getElementsByClassName('rec')[name].classList.remove("recanim");
+				// document.getElementsByClassName('rec')[name].classList.add("recanim");
+				console.log(document.getElementsByClassName('rec')[name].classList);
 			}
-		}
-		xhr.send(JSON.stringify({data:question}))
-	}
-	function sendData(value) {
-		document.getElementsByClassName('convomsgs')[0].innerHTML += `
-		<div class="smsg">
-					<p class="smsgtxt">${value}</p>
-					<p class="us1">You<span class="time">${new Date().getHours()}:${new Date().getMinutes()}</span></p>
-				</div>
-		`
-		document.getElementsByClassName('logopartback')[0].classList.add('logoanim');
-		document.getElementById('form').reset();
-		let xhr = new XMLHttpRequest();
-		xhr.open('POST','/getResponse');
-		xhr.setRequestHeader('Content-Type','application/json');
-		xhr.onreadystatechange = () => {
-			if (xhr.readyState == 4) {
-				let resp = xhr.responseText;
-				try {
-						document.getElementsByClassName('contcont')[0].classList.remove('logoanim');
-						let data = JSON.parse(resp);
-							if (data.success) {
-								setTimeout(function() {
-								document.getElementsByClassName('convomsgs')[0].innerHTML += `
-									<div class="rmsg">
-												<p class="rmsgtxt">${data.answer}</p>
-												<p class="us1">Assistant<span class="time">${new Date().getHours()}:${new Date().getMinutes()}</span></p>
-											</div>
-										`
-								document.getElementsByClassName("right")[0].innerHTML = `	<p class="rechead">
-									Recommended Questions
-								</p>`
-								document.getElementsByClassName('siema')[0].innerHTML = "";
-								mess = data.preview;
-								for(let i=0;i<data.preview.length;i++) {
-									dat = JSON.stringify({i,data:data.preview[i]})
-									document.getElementsByClassName("right")[0].innerHTML += `
-									<p class="rec" onclick='anim(this)'>
-										${data.preview[i]}
-									</p>`
-									document.getElementsByClassName("siema")[0].innerHTML += `
-									<div><p class="recm" onclick='anim(this)'>
-										${data.preview[i]}
-									</p></div>`
-								}
-								document.getElementsByClassName("convomsgs")[0].scrollTop = document.getElementsByClassName("convomsgs")[0].scrollHeight;
-								document.getElementsByClassName('logopartback')[0].classList.remove('logoanim');
-								}, 1500);
-							} else {
-								console.log(resp);
-							}
-							document.getElementsByClassName("convomsgs")[0].scrollTop = document.getElementsByClassName("convomsgs")[0].scrollHeight;
-					// },1000)
-				} catch(err) {
-					console.log(resp);
-				}
-
-			}
-		}
-		xhr.send(JSON.stringify({data:value}))
-	}
-	play("Say something im giving up on ypu")
-	function play(answer) {
-		let xhr = new XMLHttpRequest();
+	
+		  document.getElementsByClassName('rec')[name].classList.add("recanim");
+	
+		} 
 		
-		xhr.open("POST",`http://api.ispeech.org/api/json`);
-		xhr.setRequestHeader('Access-Control-Allow-Origin','*')
-		xhr.setRequestHeader('Content-Type','application/json');
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4) {
-				console.log(xhr.responseText)
-			}
-		}
-		xhr.send(JSON.stringify({
-			apikey:"117c9f0e71c8e033c93d80838a62ae6f",
-			action:"convert",
-			text:answer,
-			format:"mp3",
-			voice:"usenglishfemale",
-			output:"rest"
-		}))
-	}
-</script>
-
-
-</body>
-</html>
+	</script>
+	
+	
+	</body>
+	</html>
