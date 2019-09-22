@@ -29,6 +29,18 @@
 					<p class="us1">Assistant<span class="time">{{time}}</span></p>
 				</div>
 			</div>
+			<div class="siemacont">
+					<button class="prev"><i class="material-icons">navigate_before</i></button>
+				<div class="siema">
+					{% for da in preview %}
+						<div><p class="recm" onclick='anim(this)'>
+							{{da}}
+						</p></div>
+						{%endfor%}
+				
+				</div>
+				<button class="next"><i class="material-icons">navigate_next</i></button>
+			</div>
 
 			<div class="convoinput">
 				<form id="form">
@@ -48,7 +60,12 @@
     {%endfor%}
 </div>
 
-
+<script src="{{ url_for('static', filename='siema.min.js') }}"></script>
+<script>
+	const mySiema = new Siema();
+	document.querySelector('.prev').addEventListener('click', () => mySiema.prev());
+	document.querySelector('.next').addEventListener('click', () => mySiema.next());
+</script>
 <script>
 	function anim(elem) {
 		console.log(elem);
@@ -111,6 +128,7 @@
 								document.getElementsByClassName("right")[0].innerHTML = `	<p class="rechead">
 									Recommended Questions
 								</p>`
+								document.getElementsByClassName('siema')[0].innerHTML = "";
 								mess = data.preview;
 								for(let i=0;i<data.preview.length;i++) {
 									dat = JSON.stringify({i,data:data.preview[i]})
@@ -118,6 +136,10 @@
 									<p class="rec" onclick='anim(this)'>
 										${data.preview[i]}
 									</p>`
+									document.getElementsByClassName("siema")[0].innerHTML += `
+									<div><p class="recm" onclick='anim(this)'>
+										${data.preview[i]}
+									</p></div>`
 								}
 								document.getElementsByClassName("convomsgs")[0].scrollTop = document.getElementsByClassName("convomsgs")[0].scrollHeight;
 								document.getElementsByClassName('logopartback')[0].classList.remove('logoanim');

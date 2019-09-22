@@ -44,6 +44,12 @@ def home():
                 questionID=[]
                 visits=[]
                 queries = user['queries'];
+                ques = []
+                for i in range(0,len(questions)):
+                    ques.append({
+                        "questionID":i,
+                        "question":questions[i]
+                    })
                 for i in queries:
                     userID.append(str(user['_id']));
                     questionID.append(i['questionID'])
@@ -58,12 +64,13 @@ def home():
                             questionID.append(j['questionID'])
                             visits.append(j['visits'])
                 data = DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
-                queries = generate_recommendations(cookie, 3, data, questions)
+                ques = DataFrame({"questionID":ques})
+                queries = generate_recommendations(cookie, 3, data, ques)
             except:
                 queries=[
                     "What are the advantages of HPE OneView?","What is a software-defined approach to lifecycle management?"
                 ]; 
-            # answer,queries = find(queries[-1],stop_words,doc_text,answers,questions,ps)
+                # answer,queries = find(queries[-1],stop_words,doc_text,answers,questions,ps)
             
     else:
         user = mongo.db.user.insert_one({"queries":listt});
@@ -96,6 +103,11 @@ def findQuery():
             questionID=[]
             visits=[]
             queries = user['queries'];
+            ques = []
+            for i in range(0,len(questions)):
+                ques.append(
+                    {"questionID":i}
+                )
             for i in queries:
                 userID.append(str(user['_id']));
                 questionID.append(i['questionID'])
@@ -110,8 +122,11 @@ def findQuery():
                         questionID.append(j['questionID'])
                         visits.append(j['visits'])
             data = DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
-            queries = generate_recommendations(cookie, 3, data, questions)
+            ques = DataFrame({"questionID":ques})
+            queries = generate_recommendations(cookie, 3, data, ques)
+            print(queries);
         except:
+            print('err');
             queries = top;
         done = True;
     else:

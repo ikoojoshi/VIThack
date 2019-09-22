@@ -72,7 +72,7 @@ def generate_recommendations(user, n, history, questions):
     history_s.questionID = history_s.questionID.astype(str)
     question_user = history_s.groupby('userID')['questionID'].apply(lambda x:','.join(x))
 
-    question_user.index = question_user.index.astype(int)
+    question_user.index = question_user.index.astype(str)
     question_by_user = temp.columns[temp[temp.index==user].notna().any()].tolist()
     a = sim_user_m[sim_user_m.index==user].values
     b = a.squeeze().tolist()
