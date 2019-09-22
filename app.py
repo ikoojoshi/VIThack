@@ -15,9 +15,10 @@ questions, answers = readContents();
 words,stop_words, doc_text,ps = words(questions);
 
 listt=[];
-for i in questions:
+for i in range(len(questions)):
     listt.append({
-        "question": i,
+        "question": questions[i],
+        "questionID":i,
         "visits":0
     })
 @app.route("/", methods=["GET"])
@@ -45,7 +46,7 @@ def home():
                 queries = user['queries'];
                 for i in queries:
                     userID.append(str(user['_id']));
-                    questionID.append(i['question'])
+                    questionID.append(i['questionID'])
                     visits.append(i['visits'])
                 users = mongo.db.user.find();
                 for i in users:
@@ -54,11 +55,10 @@ def home():
                     if (id!=cookie):
                         for j in ques:
                             userID.append(str(id));
-                            questionID.append(j['question'])
+                            questionID.append(j['questionID'])
                             visits.append(j['visits'])
                 data = DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
                 queries = generate_recommendations(cookie, 3, data, questions)
-                print(queries)
             except:
                 queries=[
                     "What are the advantages of HPE OneView?","What is a software-defined approach to lifecycle management?"
@@ -98,7 +98,7 @@ def findQuery():
             queries = user['queries'];
             for i in queries:
                 userID.append(str(user['_id']));
-                questionID.append(i['question'])
+                questionID.append(i['questionID'])
                 visits.append(i['visits'])
             users = mongo.db.user.find();
             for i in users:
@@ -107,11 +107,10 @@ def findQuery():
                 if (id!=cookie):
                     for j in ques:
                         userID.append(str(id));
-                        questionID.append(j['question'])
+                        questionID.append(j['questionID'])
                         visits.append(j['visits'])
-            data = pandas.DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
+            data = DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
             queries = generate_recommendations(cookie, 3, data, questions)
-            print(queries)
         except:
             queries = top;
         done = True;
