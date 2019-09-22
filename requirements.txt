@@ -1,12 +1,8 @@
 flask
 flask_pymongo
-pymongo
 bson
-pandas
-numpy
 pypdf2
 autocorrect
 nltk
 pprint
 bs4
-sklearn

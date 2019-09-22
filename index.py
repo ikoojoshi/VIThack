@@ -8,7 +8,7 @@ from recommendation import generate_recommendations
 from pandas import read_csv,DataFrame;
 
 app = Flask(__name__);
-app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase";
+app.config["MONGO_URI"] = "mongodb://vatsal-kandoi:RevCode2k18@ds353007.mlab.com:53007/mydatabase";
 mongo = PyMongo(app);
 
 questions, answers = readContents();
@@ -39,39 +39,41 @@ def home():
                 "What are the advantages of HPE OneView?","What is a software-defined approach to lifecycle management?"
             ];
         else:
-            try:
-                userID=[]
-                questionID=[]
-                visits=[]
-                queries = user['queries'];
-                ques = []
-                for i in range(0,len(questions)):
-                    ques.append({
-                        "questionID":i,
-                        "question":questions[i]
-                    })
-                for i in queries:
-                    userID.append(str(user['_id']));
-                    questionID.append(i['questionID'])
-                    visits.append(i['visits'])
-                users = mongo.db.user.find();
-                for i in users:
-                    id = str(i["_id"]);
-                    ques = i["queries"];
-                    if (id!=cookie):
-                        for j in ques:
-                            userID.append(str(id));
-                            questionID.append(j['questionID'])
-                            visits.append(j['visits'])
-                data = DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
-                ques = DataFrame({"questionID":ques})
-                queries = generate_recommendations(cookie, 3, data, ques)
-            except:
-                queries=[
-                    "What are the advantages of HPE OneView?","What is a software-defined approach to lifecycle management?"
-                ]; 
+            # try:
+            #     userID=[]
+            #     questionID=[]
+            #     visits=[]
+            #     queries = user['queries'];
+            #     ques = []
+            #     for i in range(0,len(questions)):
+            #         ques.append({
+            #             "questionID":i,
+            #             "question":questions[i]
+            #         })
+            #     for i in queries:
+            #         userID.append(str(user['_id']));
+            #         questionID.append(i['questionID'])
+            #         visits.append(i['visits'])
+            #     users = mongo.db.user.find();
+            #     for i in users:
+            #         id = str(i["_id"]);
+            #         ques = i["queries"];
+            #         if (id!=cookie):
+            #             for j in ques:
+            #                 userID.append(str(id));
+            #                 questionID.append(j['questionID'])
+            #                 visits.append(j['visits'])
+            #     data = DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
+            #     ques = DataFrame({"questionID":ques})
+                # queries = generate_recommendations(cookie, 3, data, ques)
+            # except:
+            #     queries=[
+            #         "What are the advantages of HPE OneView?","What is a software-defined approach to lifecycle management?"
+            #     ]; 
                 # answer,queries = find(queries[-1],stop_words,doc_text,answers,questions,ps)
-            
+        queries=[
+            "What are the advantages of HPE OneView?","What is a software-defined approach to lifecycle management?"
+        ]    
     else:
         user = mongo.db.user.insert_one({"queries":listt});
         user = user.inserted_id;
@@ -97,40 +99,40 @@ def findQuery():
     if (cookie != None):
         question,answer,top = find(data["data"],stop_words,doc_text,answers,questions,ps)
         user = mongo.db.user.update_one({"_id":ObjectId(cookie), 'queries.question': question},{'$inc':{'queries.$.visits':1}});
-        try:
-            user = mongo.db.user.find_one({"_id":ObjectId(cookie)});
-            userID=[]
-            questionID=[]
-            visits=[]
-            queries = user['queries'];
-            ques = []
-            for i in range(0,len(questions)):
-                ques.append(
-                    {"questionID":i}
-                )
-            for i in queries:
-                userID.append(str(user['_id']));
-                questionID.append(i['questionID'])
-                visits.append(i['visits'])
-            users = mongo.db.user.find();
-            for i in users:
-                id = i["_id"];
-                ques = i["queries"];
-                if (id!=cookie):
-                    for j in ques:
-                        userID.append(str(id));
-                        questionID.append(j['questionID'])
-                        visits.append(j['visits'])
-            data = DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
-            ques = DataFrame({"questionID":ques})
-            queries = generate_recommendations(cookie, 3, data, ques)
-            print(queries);
-        except:
-            print('err');
-            queries = top;
+        # try:
+        #     user = mongo.db.user.find_one({"_id":ObjectId(cookie)});
+        #     userID=[]
+        #     questionID=[]
+        #     visits=[]
+        #     queries = user['queries'];
+        #     ques = []
+        #     for i in range(0,len(questions)):
+        #         ques.append(
+        #             {"questionID":i}
+        #         )
+        #     for i in queries:
+        #         userID.append(str(user['_id']));
+        #         questionID.append(i['questionID'])
+        #         visits.append(i['visits'])
+        #     users = mongo.db.user.find();
+        #     for i in users:
+        #         id = i["_id"];
+        #         ques = i["queries"];
+        #         if (id!=cookie):
+        #             for j in ques:
+        #                 userID.append(str(id));
+        #                 questionID.append(j['questionID'])
+        #                 visits.append(j['visits'])
+        #     data = DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
+        #     ques = DataFrame({"questionID":ques})
+        #     queries = generate_recommendations(cookie, 3, data, ques)
+        #     print(queries);
+        # except:
+        #     print('err');
+            # queries = top;
         done = True;
     else:
-        answer,top = find(data["data"],stop_words,doc_text,answers,questions,ps)
+        question,answer,top = find(data["data"],stop_words,doc_text,answers,questions,ps)
         done = True;
         queries = top;
     return jsonify(
