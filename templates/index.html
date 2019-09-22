@@ -25,7 +25,7 @@
 <div class="convo">
 			<div class="convomsgs">
 				<div class="rmsg">
-					<p class="rmsgtxt">Hi, how are you?</p>
+					<p class="rmsgtxt">Hi, how may I be of assisstance?</p>
 					<p class="us1">Assistant<span class="time">{{time}}</span></p>
 				</div>
 			</div>
@@ -41,24 +41,25 @@
 	<p class="rechead">
 		Recommended Questions
 	</p>
-	{%for i in range(0,length)%}
-		<p class="rec" onclick='anim(i,preview)'>
-			preview[i]
+	{%for da in preview%}
+		<p class="rec" onclick='anim(this)'>
+			{{da}}
 		</p>
     {%endfor%}
 </div>
 
 
 <script>
-	let mess= []
-	function anim(name) {
-		if (document.getElementsByClassName('rec')[name].classList.contains('recanim')){
-			document.getElementsByClassName('rec')[name].classList.remove("recanim");
+	function anim(elem) {
+		console.log(elem);
+		if (elem.classList.contains('recanim')){
+			elem.classList.remove("recanim");
 			// document.getElementsByClassName('rec')[name].classList.add("recanim");
 			
 		}
-		sendData(mess[name]);
-	  document.getElementsByClassName('rec')[name].classList.add("recanim");
+		elem.classList.add("recanim");
+		console.log(elem.innerHTML);
+		sendData(elem.innerHTML);
 
 	} 
 	document.getElementById("form").addEventListener("submit",(e)=> {
@@ -112,8 +113,9 @@
 								</p>`
 								mess = data.preview;
 								for(let i=0;i<data.preview.length;i++) {
+									dat = JSON.stringify({i,data:data.preview[i]})
 									document.getElementsByClassName("right")[0].innerHTML += `
-									<p class="rec" onclick='anim(${i})'>
+									<p class="rec" onclick='anim(this)'>
 										${data.preview[i]}
 									</p>`
 								}

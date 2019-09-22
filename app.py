@@ -17,7 +17,6 @@ def home():
     first = False;
     if (cookie != None):
         user = mongo.db.user.find_one({"_id": ObjectId(cookie)});
-        print(user);
         if (user == None):
             user = mongo.db.user.insert_one({"_id":ObjectId(cookie), "queries":[]});
             user = user.inserted_id;
@@ -38,6 +37,7 @@ def home():
         else:
             done = False;
         queries=[];
+    answer,queries = find(queries[-1],stop_words,doc_text,answers,questions,ps)
     now = datetime.now()
     current_time = now.strftime("%H:%M")
     resp = make_response(render_template("index.html", preview=queries, length=len(queries), time = current_time))
@@ -48,10 +48,10 @@ def home():
 
 @app.route("/getResponse", methods=["POST","GET"])
 def findQuery():
-    cookie = request.cookies.get('somecookiename')
+    cookie = request.cookies.get('HPE')
     data = request.get_json();
     if (cookie != None):
-        user = mongo.db.user.update_one({"_id":ObjectId(cookie)},{'$addToSet':{'queries':data["data"]}});
+        user = mongo.db.user.update_one({"_id":ObjectId(cookie)},{'$push':{'queries':data["data"]}});
         print(user)
         answer,top = find(data["data"],stop_words,doc_text,answers,questions,ps)
         done = True;
