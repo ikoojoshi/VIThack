@@ -89,7 +89,7 @@
 					<p class="us1">You<span class="time">${new Date().getHours()}:${new Date().getMinutes()}</span></p>
 				</div>
 		`
-		document.getElementsByClassName('contcont')[0].classList.add('logoanim');
+		document.getElementsByClassName('logopartback')[0].classList.add('logoanim');
 		document.getElementById('form').reset();
 		let xhr = new XMLHttpRequest();
 		xhr.open('POST','/getResponse');
@@ -98,10 +98,10 @@
 			if (xhr.readyState == 4) {
 				let resp = xhr.responseText;
 				try {
-					// setTimeout(function() {
 						document.getElementsByClassName('contcont')[0].classList.remove('logoanim');
 						let data = JSON.parse(resp);
 							if (data.success) {
+								setTimeout(function() {
 								document.getElementsByClassName('convomsgs')[0].innerHTML += `
 									<div class="rmsg">
 												<p class="rmsgtxt">${data.answer}</p>
@@ -119,6 +119,9 @@
 										${data.preview[i]}
 									</p>`
 								}
+								document.getElementsByClassName("convomsgs")[0].scrollTop = document.getElementsByClassName("convomsgs")[0].scrollHeight;
+								document.getElementsByClassName('logopartback')[0].classList.remove('logoanim');
+								}, 1500);
 							} else {
 								console.log(resp);
 							}
