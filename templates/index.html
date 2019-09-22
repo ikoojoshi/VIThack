@@ -1,15 +1,142 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
-    </head>
-    <body>
-        <ol> 
-            {%for i in preview%} 
-              
-                <li>{{i}}</li> 
-            {%endfor%} 
-              
-            </ol> 
-    </body>
+<head>
+	<title>HPE OneView</title>
+	<meta charset="utf-8">
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Livvic:500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Varela&display=swap" rel="stylesheet">
+
+
+<body>
+	<div class="left">
+		
+	<div class="contcont">
+	<div class="logopartback"></div>
+	<div class="logopart">
+	</div>
+	<img class="hplogo" src="{{ url_for('static', filename='logo.png') }}">
+</div>
+<p class="heading">OneView Assistant</p>
+<br>
+<div class="convo">
+			<div class="convomsgs">
+				<div class="rmsg">
+					<p class="rmsgtxt">Hi, how may I be of assisstance?</p>
+					<p class="us1">Assistant<span class="time">{{time}}</span></p>
+				</div>
+			</div>
+
+			<div class="convoinput">
+				<form id="form">
+					<input class="entertxt" id="messageVal" type="text"><i class="sendbut material-icons" onclick="send()">send</i>
+				</form>
+			</div>
+		</div>
+	</div>
+<div class="right">
+	<p class="rechead">
+		Recommended Questions
+	</p>
+	{%for da in preview%}
+		<p class="rec" onclick='anim(this)'>
+			{{da}}
+		</p>
+    {%endfor%}
+</div>
+
+
+<script>
+	function anim(elem) {
+		console.log(elem);
+		if (elem.classList.contains('recanim')){
+			elem.classList.remove("recanim");
+			// document.getElementsByClassName('rec')[name].classList.add("recanim");
+			
+		}
+		elem.classList.add("recanim");
+		console.log(elem.innerHTML);
+		sendData(elem.innerHTML);
+
+	} 
+	document.getElementById("form").addEventListener("submit",(e)=> {
+		e.preventDefault();
+		send();
+	});
+	document.getElementsByClassName("sendbut")[0].addEventListener("click", (e) =>{
+		e.preventDefault();
+		let value = document.getElementById('messageVal').value;
+		sendData(value);
+	});
+	function dislike(question) {
+		let xhr = new XMLHttpRequest();
+		xhr.open('POST','/satisfied');
+		xhr.setRequestHeader('Content-Type','application/json');
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState == 4) {
+
+			}
+		}
+		xhr.send(JSON.stringify({data:question}))
+	}
+	function sendData(value) {
+		document.getElementsByClassName('convomsgs')[0].innerHTML += `
+		<div class="smsg">
+					<p class="smsgtxt">${value}</p>
+					<p class="us1">You<span class="time">${new Date().getHours()}:${new Date().getMinutes()}</span></p>
+				</div>
+		`
+		document.getElementsByClassName('logopartback')[0].classList.add('logoanim');
+		document.getElementById('form').reset();
+		let xhr = new XMLHttpRequest();
+		xhr.open('POST','/getResponse');
+		xhr.setRequestHeader('Content-Type','application/json');
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState == 4) {
+				let resp = xhr.responseText;
+				try {
+						document.getElementsByClassName('contcont')[0].classList.remove('logoanim');
+						let data = JSON.parse(resp);
+							if (data.success) {
+								setTimeout(function() {
+								document.getElementsByClassName('convomsgs')[0].innerHTML += `
+									<div class="rmsg">
+												<p class="rmsgtxt">${data.answer}</p>
+												<p class="us1">Assistant<span class="time">${new Date().getHours()}:${new Date().getMinutes()}</span></p>
+											</div>
+										`
+								document.getElementsByClassName("right")[0].innerHTML = `	<p class="rechead">
+									Recommended Questions
+								</p>`
+								mess = data.preview;
+								for(let i=0;i<data.preview.length;i++) {
+									dat = JSON.stringify({i,data:data.preview[i]})
+									document.getElementsByClassName("right")[0].innerHTML += `
+									<p class="rec" onclick='anim(this)'>
+										${data.preview[i]}
+									</p>`
+								}
+								document.getElementsByClassName("convomsgs")[0].scrollTop = document.getElementsByClassName("convomsgs")[0].scrollHeight;
+								document.getElementsByClassName('logopartback')[0].classList.remove('logoanim');
+								}, 1500);
+							} else {
+								console.log(resp);
+							}
+							document.getElementsByClassName("convomsgs")[0].scrollTop = document.getElementsByClassName("convomsgs")[0].scrollHeight;
+					// },1000)
+				} catch(err) {
+					console.log(resp);
+				}
+
+			}
+		}
+		xhr.send(JSON.stringify({data:value}))
+	}
+</script>
+
+
+</body>
 </html>

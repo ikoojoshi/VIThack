@@ -15,6 +15,7 @@ import re
 import math
 import operator
 import requests
+from autocorrect import spell
 
 from bs4 import BeautifulSoup as soup
 from bs4.element import Comment
@@ -25,8 +26,9 @@ from nltk.tokenize import word_tokenize
 from collections import Counter
 from pprint import pprint
 
-
-# In[2]:
+keys = ["HPE", "OneView", "lifecycle", "SPP", "SPPs", "OS", "iLO", "DIMM", "IPv6", "3PAR", "StoreServ", "FC", "ICM", "BNA", "StoreVirtual",                   
+"DL", "FlexNIC", "FlexHBA", "FlexFabric", "IMC", "B22HP", "FEX", "LACP", "Active",  "ToR", "Arista", "Composable", "VMware",
+"SIM", "vSphere", "MyRoom"]
 
 def readContents():
     pdf_file = open('FAQs.pdf', 'rb')
@@ -132,10 +134,17 @@ def text_to_vector(text):
 
 # In[84]:
 
-def find(userQUERY,stop_words,doc_text,answers,ps):
+def find(userQUERY,stop_words,doc_text,answers,questions,ps):
     #userQUERY = "SPP stands for?"
-    QUERY = userQUERY.replace("?", "").split(" ")
-    filtered_query = [ps.stem(w) for w in QUERY if not w in stop_words]
+    query = userQUERY.replace("?", "").split(" ")
+    filtered_query = []
+    for w in query:
+        if w not in stop_words:
+            if w in keys:
+                filtered_query.append(ps.stem(w))
+            else:
+                filtered_query.append(ps.stem(spell(w)))
+    filtered_query = [ps.stem(w) for w in query if not w in stop_words]
     #print(filtered_query)
     cosine_similarities = {}
 
@@ -148,15 +157,20 @@ def find(userQUERY,stop_words,doc_text,answers,ps):
         
         cosine_similarities[idx] = get_cosine(vector1, vector2)
 
-        
     key_max = max(cosine_similarities.keys(), key=(lambda k: cosine_similarities[k]))
-
+    answer = answers[key_max]
+    prob = cosine_similarities[key_max]
     # print('Maximum Value: ', cosine_similarities[key_max], '\n')
     # print("Q. ", userQUERY)
-
-    if(cosine_similarities[key_max] < 0.4):
-        return "Kindly be more precise."
+    cosine_similarities[key_max] = 0;
+    top=[]
+    for i in range(0,3):
+        key_max=max(cosine_similarities.keys(), key=(lambda k: cosine_similarities[k]))
+        top.append(questions[key_max])
+        cosine_similarities[key_max]=0
+    if(prob < 0.4):
+        return ("Kindly be more precise.",top)
     else:
-        return answers[key_max]
+        return (answer,top)
     
 
