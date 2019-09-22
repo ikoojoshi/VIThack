@@ -33,35 +33,6 @@ def User_item_score(user,item):
     return final_score
 	
 	
-def User_item_score1(user):
-    question_by_user = temp.columns[temp[temp.index==user].notna().any()].tolist()
-    a = sim_user_m[sim_user_m.index==user].values
-    b = a.squeeze().tolist()
-    d = question_user[question_user.index.isin(b)]
-    l = ','.join(d.values)
-    question_similar_users = l.split(',')
-    questionslist = list(set(question_similar_users)-set(list(map(str, question_by_user))))
-    questionslist = list(map(int, questionslist))
-    score = []
-    for item in questionslist:
-        item = int(item)
-        c = final_question.loc[:,item]
-        d = c[c.index.isin(b)]
-        f = d[d.notnull()]
-        avg_user = userhistory.loc[userhistory['userID'] == user,'visits'].values[0]
-        index = f.index.values.squeeze().tolist()
-        corr = similarity_with_question.loc[user,index]
-        fin = pd.concat([f, corr], axis=1)
-        fin.columns = ['adg_score','correlation']
-        fin['score']=fin.apply(lambda x:x['adg_score'] * x['correlation'],axis=1)
-        nume = fin['score'].sum()
-        deno = fin['correlation'].sum()
-        final_score = avg_user + (nume/deno)
-        score.append(final_score)
-    data = pd.DataFrame({'questionID':questionslist,'score':score})
-    recommendations = data.sort_values(by='score',ascending=False)
-    questionname = recommendations.merge(questions, how='inner', on='questionID')
-    return questionname.Name.values.tolist()
 	
 def generate_recommendations(user, n, history, questions):	
 
@@ -102,5 +73,32 @@ def generate_recommendations(user, n, history, questions):
     question_user = history_s.groupby('userID')['questionID'].apply(lambda x:','.join(x))
 
     question_user.index = question_user.index.astype(int)
-    predicted_questions = User_item_score1(user)
-    return predicted_questions
+    question_by_user = temp.columns[temp[temp.index==user].notna().any()].tolist()
+    a = sim_user_m[sim_user_m.index==user].values
+    b = a.squeeze().tolist()
+    d = question_user[question_user.index.isin(b)]
+    l = ','.join(d.values)
+    question_similar_users = l.split(',')
+    questionslist = list(set(question_similar_users)-set(list(map(str, question_by_user))))
+    questionslist = list(map(int, questionslist))
+    score = []
+    for item in questionslist:
+        item = int(item)
+        c = final_question.loc[:,item]
+        d = c[c.index.isin(b)]
+        f = d[d.notnull()]
+        avg_user = userhistory.loc[userhistory['userID'] == user,'visits'].values[0]
+        index = f.index.values.squeeze().tolist()
+        corr = similarity_with_question.loc[user,index]
+        fin = pd.concat([f, corr], axis=1)
+        fin.columns = ['adg_score','correlation']
+        fin['score']=fin.apply(lambda x:x['adg_score'] * x['correlation'],axis=1)
+        nume = fin['score'].sum()
+        deno = fin['correlation'].sum()
+        final_score = avg_user + (nume/deno)
+        score.append(final_score)
+    data = pd.DataFrame({'questionID':questionslist,'score':score})
+    recommendations = data.sort_values(by='score',ascending=False)
+    questionname = recommendations.merge(questions, how='inner', on='questionID')
+    
+    return questionname.Name.values.tolist();

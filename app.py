@@ -3,6 +3,9 @@ from flask_pymongo import PyMongo
 from HPchatbot import readContents, words, find
 from datetime import datetime
 from bson import ObjectId
+import json
+from recommendation import generate_recommendations
+from pandas import read_csv,DataFrame;
 
 app = Flask(__name__);
 app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase";
@@ -11,6 +14,12 @@ mongo = PyMongo(app);
 questions, answers = readContents();
 words,stop_words, doc_text,ps = words(questions);
 
+listt=[];
+for i in questions:
+    listt.append({
+        "question": i,
+        "visits":0
+    })
 @app.route("/", methods=["GET"])
 def home():
     cookie = request.cookies.get('HPE')
@@ -18,31 +27,59 @@ def home():
     if (cookie != None):
         user = mongo.db.user.find_one({"_id": ObjectId(cookie)});
         if (user == None):
-            user = mongo.db.user.insert_one({"_id":ObjectId(cookie), "queries":[]});
+            user = mongo.db.user.insert_one({"queries":listt});
             user = user.inserted_id;
             first = True;
             if (user==None):
                 done = True;
             else:
                 done = False;
-            queries=[]
+            queries=[
+                "What are the advantages of HPE OneView?","What is a software-defined approach to lifecycle management?"
+            ];
         else:
-            queries = user['queries'];
+            try:
+                userID=[]
+                questionID=[]
+                visits=[]
+                queries = user['queries'];
+                for i in queries:
+                    userID.append(str(user['_id']));
+                    questionID.append(i['question'])
+                    visits.append(i['visits'])
+                users = mongo.db.user.find();
+                for i in users:
+                    id = str(i["_id"]);
+                    ques = i["queries"];
+                    if (id!=cookie):
+                        for j in ques:
+                            userID.append(str(id));
+                            questionID.append(j['question'])
+                            visits.append(j['visits'])
+                data = DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
+                queries = generate_recommendations(cookie, 3, data, questions)
+                print(queries)
+            except:
+                queries=[
+                    "What are the advantages of HPE OneView?","What is a software-defined approach to lifecycle management?"
+                ]; 
+            # answer,queries = find(queries[-1],stop_words,doc_text,answers,questions,ps)
+            
     else:
-        user = mongo.db.user.insert_one({"_id":ObjectId(cookie), "queries":[]});
+        user = mongo.db.user.insert_one({"queries":listt});
         user = user.inserted_id;
         first = True;
         if (user == None):
             done = True;
         else:
             done = False;
-        queries=[];
-    answer,queries = find(queries[-1],stop_words,doc_text,answers,questions,ps)
+        queries=[
+            "What are the advantages of HPE OneView?","What is a software-defined approach to lifecycle management?"
+        ];
     now = datetime.now()
     current_time = now.strftime("%H:%M")
     resp = make_response(render_template("index.html", preview=queries, length=len(queries), time = current_time))
     if (first):
-        print(user)
         resp.set_cookie('HPE',str(user));    
     return resp 
 
@@ -51,18 +88,42 @@ def findQuery():
     cookie = request.cookies.get('HPE')
     data = request.get_json();
     if (cookie != None):
-        user = mongo.db.user.update_one({"_id":ObjectId(cookie)},{'$push':{'queries':data["data"]}});
-        print(user)
-        answer,top = find(data["data"],stop_words,doc_text,answers,questions,ps)
+        question,answer,top = find(data["data"],stop_words,doc_text,answers,questions,ps)
+        user = mongo.db.user.update_one({"_id":ObjectId(cookie), 'queries.question': question},{'$inc':{'queries.$.visits':1}});
+        try:
+            user = mongo.db.user.find_one({"_id":ObjectId(cookie)});
+            userID=[]
+            questionID=[]
+            visits=[]
+            queries = user['queries'];
+            for i in queries:
+                userID.append(str(user['_id']));
+                questionID.append(i['question'])
+                visits.append(i['visits'])
+            users = mongo.db.user.find();
+            for i in users:
+                id = i["_id"];
+                ques = i["queries"];
+                if (id!=cookie):
+                    for j in ques:
+                        userID.append(str(id));
+                        questionID.append(j['question'])
+                        visits.append(j['visits'])
+            data = pandas.DataFrame({"userID":userID,"questionID":questionID,"visits":visits})
+            queries = generate_recommendations(cookie, 3, data, questions)
+            print(queries)
+        except:
+            queries = top;
         done = True;
     else:
         answer,top = find(data["data"],stop_words,doc_text,answers,questions,ps)
         done = True;
+        queries = top;
     return jsonify(
         status=200,
         success=done,
         answer=answer,
-        preview=top
+        preview=queries
     )
 
 @app.route("/satisfied", methods=["POST"])

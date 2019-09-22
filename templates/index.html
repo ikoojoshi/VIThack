@@ -135,6 +135,27 @@
 		}
 		xhr.send(JSON.stringify({data:value}))
 	}
+	play("Say something im giving up on ypu")
+	function play(answer) {
+		let xhr = new XMLHttpRequest();
+		
+		xhr.open("POST",`http://api.ispeech.org/api/json`);
+		xhr.setRequestHeader('Access-Control-Allow-Origin','*')
+		xhr.setRequestHeader('Content-Type','application/json');
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4) {
+				console.log(xhr.responseText)
+			}
+		}
+		xhr.send(JSON.stringify({
+			apikey:"117c9f0e71c8e033c93d80838a62ae6f",
+			action:"convert",
+			text:answer,
+			format:"mp3",
+			voice:"usenglishfemale",
+			output:"rest"
+		}))
+	}
 </script>
 
 

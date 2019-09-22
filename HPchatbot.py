@@ -159,6 +159,7 @@ def find(userQUERY,stop_words,doc_text,answers,questions,ps):
 
     key_max = max(cosine_similarities.keys(), key=(lambda k: cosine_similarities[k]))
     answer = answers[key_max]
+    question = questions[key_max]
     prob = cosine_similarities[key_max]
     # print('Maximum Value: ', cosine_similarities[key_max], '\n')
     # print("Q. ", userQUERY)
@@ -171,6 +172,6 @@ def find(userQUERY,stop_words,doc_text,answers,questions,ps):
     if(prob < 0.4):
         return ("Kindly be more precise.",top)
     else:
-        return (answer,top)
+        return (question,answer,top)
     
 
